@@ -1,0 +1,25 @@
+<head>
+<meta charset=utf-8">
+<script type="text/javascript">
+function getIdValue(str)
+{
+	var string=str;
+	if(str=='aaa')
+	{
+	    string='bbb';
+	}
+	else if(str=='ccc')
+	{
+	    string='ddd';
+	}
+	
+	return string;
+}
+</script>
+</head>
+
+<form method="post" action="">
+<input type="text" name="T1" id="T1" onchange="document.getElementById('T2').value=getIdValue(this.value);">
+<input type="text" name="T2" id="T2">
+<input type="submit" value="go">
+</form>

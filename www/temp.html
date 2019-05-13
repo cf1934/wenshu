@@ -1,0 +1,27 @@
+<html>
+<head>
+<meta charset='UTF-8' />
+<script type="text/javascript">
+function getIdValue(str)
+{
+	var string=str;
+	if(str=='aaa')
+	{
+	    string='bbb';
+	}
+	else if(str=='ccc')
+	{
+	    string='ddd';
+	}
+	return string;
+}
+</script>
+</head>
+
+<body>
+
+输入您的姓名：
+<input type="text" id="name" onchange="document.getElementById('T2').value=getIdValue(this.value)" />
+<input type="text" id="T2">
+</body>
+</html>
