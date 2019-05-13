@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="referrer" content="origin" />
+    <title>Nginx+php+fastcgi在win7下的配置</title>
+<meta property="og:description" content="首先装载php 1、从www.php.net上下载php对应版本 2、解压之后放到c盘下（其实放哪无所谓，Apache会有配置指向，但是Nginx不用） 3、因为用的5.3.17版本，已经有了php-" />
+    <link type="text/css" rel="stylesheet" href="/bundles/blog-common.css?v=svlZeZMvc3He7PqOD4T7SOuQn0_kIfLBYiy3idqd35Y1"/>
+<link id="MainCss" type="text/css" rel="stylesheet" href="/skins/nature/bundle-nature.css?v=SMSmqROZamyrz003uRLsZZQqisVE_ymEDyPy07GKHPw1"/>
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="/skins/nature/bundle-nature-mobile.css?v=VZZEnQMdg-BsJTaEBylBBpwMjz7m5pJk7f5Ix5zA_lA1"/>
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/liangxiaofeng/rss"/>
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/liangxiaofeng/rsd.xml"/>
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/liangxiaofeng/wlwmanifest.xml"/>
+    <script src="//common.cnblogs.com/scripts/jquery-2.2.0.min.js"></script>
+    <script>var currentBlogId=81828;var currentBlogApp='liangxiaofeng',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="/bundles/blog-common.js?v=OFBZTzkHKauV7mtIFLF9jlqrX-sesK9-mY9KjurLrq01" type="text/javascript"></script>
+</head>
+<body>
+<a name="top"></a>
+
+
+<!--done-->
+<div id="banner"><div id="bnr_pic">
+<!--done-->
+<div class="header">
+	<br>
+	<div class="headerDis"></div>
+</div>
+</div></div>
+<div id="main">
+	<!-- left starts -->
+	<div id="left">
+		<DIV id="mystats">
+			<br/>
+				<div id="blog_stats">
+<!--done-->
+</div>
+			
+		</DIV>
+		<div id="mylinks">
+<!--done-->
+		<div id="topics">
+			
+        <div id="post_detail">
+<div class="post">
+	<div class="postTitle">
+		<h1><a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/liangxiaofeng/p/5975135.html">Nginx+php+fastcgi在win7下的配置</a></h1>
+	</div>
+	<div id="cnblogs_post_body" class="blogpost-body"><div><strong>首先装载php</strong></div>
+<div>1、从www.php.net上下载php对应版本</div>
+<div>2、解压之后放到c盘下（其实放哪无所谓，Apache会有配置指向，但是Nginx不用）</div>
+<div>3、因为用的5.3.17版本，已经有了php-cgi.exe这个，不用做其他的事情所以开始更改php的配置，先把php.ini-development这个文件更名为php.ini，也有的版本ini后面跟的是别的，都改成.ini</div>
+<div>4、打开php.ini文件，修改：</div>
+<div>配置：</div>
+<div>extension_dir = "这里写你的ext文件夹路径" &nbsp;&nbsp;&nbsp;&nbsp;;这个路径是指向扩展库的路径</div>
+<div>upload_tmp_dir = "这里写你的上传缓存目录" &nbsp;&nbsp;&nbsp;&nbsp;;上传图片之类的缓存这里</div>
+<div>session.save_path = "这里写你的session缓存目录" &nbsp;&nbsp;&nbsp;;这个是以文件形式储存sission，如果以数据库存储session则需要另外配置</div>
+<div>&nbsp;</div>
+<div>打开以下扩展：</div>
+<div>extension=php_curl.dll</div>
+<div>extension=php_gd2.dll</div>
+<div>extension=php_mbstring.dll</div>
+<div>
+<div>extension=php_mysql.dll</div>
+<div>extension=php_mysqli.dll</div>
+</div>
+<div>extension=php_pdo_mysql.dll</div>
+<div>extension=php_pdo_odbc.dll</div>
+<div>extension=php_pdo_sqlite.dll</div>
+<div>extension=php_xmlrpc.dll</div>
+<div>&nbsp;</div>
+<div>定义所在时区（本人定义的是上海时区）：</div>
+<div>date.timezone = Asia/Shanghai</div>
+<div>&nbsp;</div>
+<div>由于Nginx要求cgi方式的php，还要修改以下配置</div>
+<div>
+<div>enable_dl = On</div>
+<div>cgi.force_redirect = 0</div>
+<div>cgi.fix_pathinfo=1</div>
+<div>fastcgi.impersonate = 1</div>
+<div>cgi.rfc2616_headers = 1 &nbsp;</div>
+</div>
+<div>&nbsp;</div>
+<div><strong>配置Nginx:</strong></div>
+<div>1、从<a href="http://nginx.org/en/download.html">http://nginx.org</a>上下载Nginx，总之从官网上下个，不管官网是不是改地址了，貌似1.3.7版本没有分32位还是64位。</div>
+<div>2、解压之后放c盘下（放别处应该也成，习惯了&hellip;&hellip;）</div>
+<div>3、打开conf，更改nginx.conf</div>
+<div>打开log目录：</div>
+<div>error_log logs/error.log;</div>
+<div>更改其他配置</div>
+<div>
+<div>server {</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;listen &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;8080;#因为装了Apache已经占用了80接口</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;server_name &nbsp;localhost;</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;charset utf-8;#默认文件编码</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#charset koi8-r;</div>
+<div>&nbsp;</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#access_log &nbsp;logs/host.access.log &nbsp;main;</div>
+<div>&nbsp;</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;location / {</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root &nbsp;&nbsp;d:/nginxWeb;#这里改成你自己的虚拟目录，注意！Nginx1.3.7及以下版本不支持文件路径中间有空格也不支持中文！！！这个以上的版本不知道会不会支持，不过这个以下是不支持的&hellip;&hellip;虽然Apache支持啊&hellip;&hellip;</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;index &nbsp;index.html index.htm index.php;#注意这里添加了index.php，如果没有添加这个有可能报403错误，这个是win下的，linux或者其他系统是否会有此问题未知。</div>
+<div>autoindex on;#如果文件不存在，列出目录树结构</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#error_page &nbsp;404 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;/404.html;</div>
+<div>&nbsp;</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# redirect server error pages to the static page /50x.html</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;error_page &nbsp;&nbsp;500 502 503 504 &nbsp;/50x.html;</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;location = /50x.html {</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;root &nbsp;&nbsp;html;</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+<div>&nbsp;</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# proxy the PHP scripts to Apache listening on 127.0.0.1:80</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#location ~ \.php$ {</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# &nbsp;&nbsp;&nbsp;proxy_pass &nbsp;&nbsp;http://127.0.0.1;</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#}</div>
+<div>&nbsp;</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;location ~ \.php$ {</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fastcgi_pass &nbsp;&nbsp;127.0.0.1:9000;#fastcgi监听的端口，与php的cgi启动时指定的要一致</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fastcgi_index &nbsp;index.php;#默认首页</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fastcgi_param &nbsp;SCRIPT_FILENAME &nbsp;D:/nginxWeb$fastcgi_script_name;#启动路径，这里只需要将&ldquo;D:/nginxWeb&rdquo;这部分改为你的安装路径就可以了</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;include &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fastcgi_params;</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+<div>&nbsp;</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# deny access to .htaccess files, if Apache's document root</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# concurs with nginx's one</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#location ~ /\.ht {</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# &nbsp;&nbsp;&nbsp;deny &nbsp;all;</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#}</div>
+<div>&nbsp;&nbsp;&nbsp;&nbsp;}</div>
+<div>&nbsp;</div>
+<div>运行：</div>
+<div>1、先要运行起php的cgi，由于本人用的win7系统，所以cmd先进的c盘（之前全扔c盘这就简单了~），访问到php路径中，输入</div>
+<div>php-cgi.exe -b 127.0.0.1:9000</div>
+<div>注意这里的-b 127.0.0.1:9000是指定cgi的监听端口，与上文中的Nginx配置要一致，如果有其他配置不记得之前php-cgi是那个端口，可以使用php-cgi.exe -h命令来查看配置（查看-b 后面的&lt;address:port&gt;）。想要查看所有被监听的端口则输入netstat -na</div>
+<div>&nbsp;</div>
+<div>2、运行Nginx</div>
+<div>另开启一个终端，访问到nginx文件夹下，输入nginx.exe</div>
+<div>&nbsp;</div>
+<div>保持两个终端不关闭，访问由浏览器访问虚拟目录下的文件。</div>
+<div>&nbsp;</div>
+<div><strong>运行后自动关闭cmd的方法：</strong></div>
+<div>1、下载RunHiddenConsole.exe(http://redmine.lighttpd.net/attachments/660/RunHiddenConsole.zip)</div>
+<div>2、创建start_php.bat，来启动php，文件内容如下：</div>
+<div>@echo off<br />echo Starting PHP FastCGI...<br />RunHiddenConsole.exe d:\php\php-cgi.exe -b 127.0.0.1:9000&nbsp;-c d:\php\php.ini</div>
+<div>3、创建stop_nginx.bat，来关闭php和nginx进程，文件内容如下：</div>
+<div>@echo off<br />echo Stopping nginx...<br />taskkill /F /IM nginx.exe &gt; nul<br />echo Stopping PHP FastCGI...<br />taskkill /F /IM php-cgi.exe &gt; nul<br />exit</div>
+<div>&nbsp;</div>
+<div><strong>相关问题：</strong></div>
+<div>1、403错误：在nginx.conf中的index配置未加入index.php是导致403错误的其中一个原因</div>
+<div>2、cmd中运行Nginx.exe产生错误可能是Nginx的路径中有中文、特殊符号、空格&mdash;&mdash;虽然windows允许这样命名，但是nginx会报错（如之前吐槽的，Apache可以，为什么Apache要把精力放在允许空格和中文作路径上而不是改善其他的啊&hellip;&hellip;费解），还有可能是Nginx的虚拟路径中存储了中文名称的文件，也可能导致nginx无法运行。</div>
+<div>3、Nginx可以运行并并且解析HTML但是无法解析PHP，这个时候要看php-cgi.exe是否起来了，还要看nginx.conf中的监听端口和php-cgi的监听端口是否一致，如同上文配置中写到的，有很多方法查看。</div></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory"></div>
+<div id="EntryTag"></div>
+<div class="clear"></div>
+</div>
+
+
+<script type="text/javascript">var allowComments=true,cb_blogId=81828,cb_entryId=5975135,cb_blogApp=currentBlogApp,cb_blogUserGuid='92986bc1-d313-e011-ac81-842b2b196315',cb_entryCreatedDate='2016/10/18 21:41:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+
+</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id='comment_form' class='commentform'>
+<a name='commentform'></a>
+<div id='divCommentShow'></div>
+<div id='comment_form_container'></div>
+<div class='ad_text_commentbox' id='ad_text_under_commentbox'></div>
+<div id='ad_t2'></div>
+<div id='opt_under_post'></div>
+<script async='async' src='https://www.googletagservices.com/tag/js/gpt.js'></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id='cnblogs_c1' class='c_ad_block'>
+    <div id='div-gpt-ad-1546353474406-0' style='height:250px; width:300px;'></div>
+</div>
+<div id='under_post_news'></div>
+<div id='cnblogs_c2' class='c_ad_block'>
+    <div id='div-gpt-ad-1539008685004-0' style='height:60px; width:468px;'></div>
+</div>
+<div id='under_post_kb'></div>
+<div id='HistoryToday' class='c_ad_block'></div>
+<script type='text/javascript'>
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+</body>
+</html>
